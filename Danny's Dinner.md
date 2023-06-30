@@ -108,3 +108,22 @@ Each of the following case study questions can be answered using a single SQL st
 ---
 
 [View on DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138)
+
+4) What is the most purchased item on the menu and how many times was it purchased by all customers?
+
+**Query #1**
+
+    SELECT m.product_name, COUNT(s.product_id) as purchased_time
+    FROM dannys_diner.sales as s
+    INNER JOIN dannys_diner.menu as m
+    ON s.product_id= m.product_id
+    GROUP BY product_name
+    LIMIT 1;
+
+| product_name | purchased_time |
+| ------------ | -------------- |
+| ramen        | 8              |
+
+---
+
+[View on DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138)
