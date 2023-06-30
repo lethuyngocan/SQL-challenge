@@ -63,4 +63,21 @@ Each of the following case study questions can be answered using a single SQL st
 
 [View on DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138)**Query #1**
 
- 
+2) How many days has each customer visited the restaurant?
+
+**Query #2**
+
+    SELECT customer_id, COUNT(DISTINCT(order_date))
+    FROM dannys_diner.sales
+    GROUP BY customer_id
+    ORDER BY customer_id;
+
+| customer_id | count |
+| ----------- | ----- |
+| A           | 4     |
+| B           | 6     |
+| C           | 2     |
+
+---
+
+[View on DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138) 
