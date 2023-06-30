@@ -81,3 +81,30 @@ Each of the following case study questions can be answered using a single SQL st
 ---
 
 [View on DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138) 
+
+3) What was the first item from the menu purchased by each customer?
+
+**Query #3**
+
+    SELECT customer_id, product_name
+    FROM (
+      SELECT s.customer_id, 
+             m.product_name,
+             s.order_date,
+             MIN(s.order_date) OVER (PARTITION BY s.customer_id) AS min_order_date
+      FROM dannys_diner.sales AS s
+      INNER JOIN dannys_diner.menu AS m ON s.product_id = m.product_id
+    ) AS subquery
+    WHERE order_date = min_order_date;
+
+| customer_id | product_name |
+| ----------- | ------------ |
+| A           | sushi        |
+| A           | curry        |
+| B           | curry        |
+| C           | ramen        |
+| C           | ramen        |
+
+---
+
+[View on DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138)
