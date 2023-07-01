@@ -234,3 +234,97 @@ Take away: To sovling this question I combined different SQL advancaed technique
 [View on DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138)
 
 Customer A orders curry after he/she became restaurant loyal member while Customer B orders sushi
+
+7)Which item was purchased just before the customer became a member?
+
+**Query #7**
+
+    WITH CTE_bfmember AS (
+        SELECT
+            s.customer_id,
+            s.order_date,
+            m.product_name,
+            RANK() OVER (PARTITION BY s.customer_id ORDER BY s.order_date) AS rank_date
+        FROM
+            dannys_diner.sales AS s
+        INNER JOIN
+            dannys_diner.menu AS m ON s.product_id = m.product_id
+        INNER JOIN
+            dannys_diner.members AS me ON s.customer_id = me.customer_id
+        WHERE
+            s.order_date < me.join_date
+        ORDER BY
+            s.customer_id,
+            s.order_date DESC
+    )
+    SELECT 
+    	customer_id,
+        product_name,
+        order_date
+    FROM
+    (
+    SELECT
+        customer_id,
+        product_name,
+        order_date,
+        rank_date,
+        MAX(rank_date) OVER (PARTITION BY customer_id) AS beforemember_date
+    FROM
+        CTE_bfmember
+     ) as subquery
+     WHERE
+     rank_date= beforemember_date;
+
+| customer_id | product_name | order_date               |
+| ----------- | ------------ | ------------------------ |
+| A           | sushi        | 2021-01-01T00:00:00.000Z |
+| A           | curry        | 2021-01-01T00:00:00.000Z |
+| B           | sushi        | 2021-01-04T00:00:00.000Z |
+
+---
+
+[View on DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138)
+
+* Customer A ordered sushi and curry on 2021/01/01 right before became a member
+* Customer B ordered sushi on 2021/01/ 04 right before became a member
+
+8) What is the total items and amount spent for each member before they became a member?
+   
+**Query #8**
+
+    WITH CTE_product AS
+    (
+       SELECT
+        s.customer_id,
+        s.order_date,
+        m.product_name,
+        m.price
+    FROM
+        dannys_diner.sales AS s
+    INNER JOIN
+        dannys_diner.menu AS m ON s.product_id = m.product_id
+    INNER JOIN
+        dannys_diner.members AS me ON s.customer_id = me.customer_id
+    WHERE
+        s.order_date < me.join_date
+    ORDER BY
+        s.customer_id,
+        s.order_date DESC
+    )
+    SELECT
+        customer_id,
+        COUNT(DISTINCT product_name) AS total_item,
+        SUM(price) AS total_price
+    FROM    
+    	CTE_product
+    GROUP BY 
+    	customer_id;
+
+| customer_id | total_item | total_price |
+| ----------- | ---------- | ----------- |
+| A           | 2          | 25          |
+| B           | 2          | 40          |
+
+---
+
+[View on DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138)
