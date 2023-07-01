@@ -111,7 +111,7 @@ Each of the following case study questions can be answered using a single SQL st
 
 4) What is the most purchased item on the menu and how many times was it purchased by all customers?
 
-**Query #1**
+**Query #4**
 
     SELECT m.product_name, COUNT(s.product_id) as purchased_time
     FROM dannys_diner.sales as s
@@ -127,3 +127,109 @@ Each of the following case study questions can be answered using a single SQL st
 ---
 
 [View on DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138)
+
+5) Which item was the most popular for each customer?
+**Query #5**
+
+    WITH cte_productname AS(
+    SELECT
+        s.customer_id,
+        s.product_id,
+     	m.product_name,
+        COUNT(s.product_id) AS frq
+    FROM
+        dannys_diner.sales AS s
+    INNER JOIN
+        dannys_diner.menu AS m ON s.product_id = m.product_id
+    GROUP BY
+        s.customer_id,
+        s.product_id,
+        m.product_name
+    ORDER BY
+        s.customer_id,
+        frq DESC
+    )
+    SELECT 
+    	customer_id,
+        product_name,
+        max_count
+    FROM (
+    SELECT
+    	customer_id,
+        product_name,
+        frq,
+        MAX (frq) OVER (PARTITION BY customer_id) AS max_count
+    FROM
+    	cte_productname
+       ) AS subquery 
+    WHERE max_count=frq;
+
+| customer_id | product_name | max_count |
+| ----------- | ------------ | --------- |
+| A           | ramen        | 3         |
+| B           | ramen        | 2         |
+| B           | sushi        | 2         |
+| B           | curry        | 2         |
+| C           | ramen        | 3         |
+
+---
+* Customer A and C purchased ramen the most frequent
+* Customer B purchased all kinds of food in the restaurant
+  
+[View on DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138)
+
+Take away: To sovling this question I combined different SQL advancaed techniques such as:
+* CTE function
+* Window Function
+* Subquery
+* Join Table
+* Group by
+
+6) Which item was purchased first by the customer after they became a member?
+**Query #6**
+
+    WITH cte_joindate AS (
+    SELECT
+    	s.customer_id,
+        s.order_date,
+        m.product_name
+    FROM 
+    	dannys_diner.sales as s
+    INNER JOIN
+    	dannys_diner.menu as m
+    ON s.product_id=m.product_id
+    
+    INNER JOIN
+    	dannys_diner.members as me
+    ON s.customer_id=me.customer_id
+    WHERE s.order_date>=me.join_date
+    ORDER BY customer_id, order_date
+    )
+    SELECT
+    	customer_id,
+        order_date,
+        product_name,
+        rank_date
+    FROM
+    (
+    SELECT
+    	customer_id,
+        order_date,
+        product_name,
+        RANK() OVER (PARTITION BY customer_id
+                        ORDER BY order_date)
+                  AS rank_date
+    FROM cte_joindate)
+    AS subquery
+    WHERE rank_date=1;
+
+| customer_id | order_date               | product_name | rank_date |
+| ----------- | ------------------------ | ------------ | --------- |
+| A           | 2021-01-07T00:00:00.000Z | curry        | 1         |
+| B           | 2021-01-11T00:00:00.000Z | sushi        | 1         |
+
+---
+
+[View on DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138)
+
+Customer A orders curry after he/she became restaurant loyal member while Customer B orders sushi
