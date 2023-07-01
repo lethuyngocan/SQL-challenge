@@ -328,3 +328,49 @@ Customer A orders curry after he/she became restaurant loyal member while Custom
 ---
 
 [View on DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138)
+
+9) If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
+
+
+**Query #9**
+
+    WITH CTE_spend AS
+    (
+       SELECT
+        s.customer_id,
+        m.product_name,
+        m.price
+    FROM
+        dannys_diner.sales AS s
+    INNER JOIN
+        dannys_diner.menu AS m ON s.product_id = m.product_id
+    ORDER BY 
+    	customer_id
+    )
+    SELECT 
+    	customer_id,
+    	SUM(points)
+    FROM
+    (
+    SELECT
+    	customer_id,
+        product_name,
+        price,
+        CASE
+        	WHEN product_name='sushi' THEN price*20
+            ELSE price*10
+            END AS points
+    FROM 
+    	CTE_spend
+    )AS subquery
+    GROUP BY customer_id;
+
+| customer_id | sum |
+| ----------- | --- |
+| A           | 860 |
+| B           | 940 |
+| C           | 360 |
+
+---
+
+[View on DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138)
