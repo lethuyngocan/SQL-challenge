@@ -374,3 +374,63 @@ Customer A orders curry after he/she became restaurant loyal member while Custom
 ---
 
 [View on DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138)
+
+10) In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
+
+
+**Query #10**
+
+    WITH cte_date AS (
+        SELECT
+            s.customer_id,
+            s.order_date,
+            me.join_date,
+            s.product_id,
+            m.price,
+            m.product_name
+        FROM
+            dannys_diner.sales AS s
+        INNER JOIN
+            dannys_diner.members AS me ON s.customer_id = me.customer_id
+        INNER JOIN
+            dannys_diner.menu AS m ON s.product_id = m.product_id
+    ),
+    CTE_point AS (
+        SELECT
+            customer_id,
+            price,
+            product_name,
+            CASE
+                WHEN order_date BETWEEN join_date AND (join_date + INTERVAL '7 days') THEN 'extra_point'
+                ELSE 'no_point'
+            END AS promote
+        FROM
+            cte_date
+      	WHERE  order_date <= '2021-01-31'
+    )
+    SELECT 
+    	customer_id,
+    	SUM(points)
+    FROM
+    (
+    SELECT
+        customer_id,
+        price,
+        CASE
+            WHEN product_name IN ('curry', 'ramen') AND promote = 'extra_point' THEN price * 20
+            WHEN product_name IN ('curry', 'ramen') AND promote = 'no_point' THEN price * 10
+            WHEN product_name = 'sushi' AND promote = 'extra_point' THEN price * 40
+            ELSE price * 20
+        END AS points
+    FROM
+        CTE_point) AS subquery
+    GROUP BY customer_id;
+
+| customer_id | sum  |
+| ----------- | ---- |
+| A           | 1370 |
+| B           | 1140 |
+
+---
+
+[View on DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138)
