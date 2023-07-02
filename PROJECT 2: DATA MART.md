@@ -79,6 +79,10 @@ platform|-
 segment|-
 age_band|	 1 = Young Adults, 2 = Middle Aged, 3/4 = Retirees and null = Unknown
 demographic|	C = Couples and F = Families and null = Unknown
+customer_type|-
 transactions|-
 avg_transaction| Sales value divided by transactions rounded to 2 decimal
 sales|	-
+
+SOLUTION:
+
