@@ -401,7 +401,7 @@ Customer A orders curry after he/she became restaurant loyal member while Custom
             price,
             product_name,
             CASE
-                WHEN order_date BETWEEN join_date AND (join_date + INTERVAL '7 days') THEN 'extra_point'
+                WHEN order_date BETWEEN join_date AND (join_date + INTERVAL '6 days') THEN 'extra_point'
                 ELSE 'no_point'
             END AS promote
         FROM
@@ -417,10 +417,9 @@ Customer A orders curry after he/she became restaurant loyal member while Custom
         customer_id,
         price,
         CASE
-            WHEN product_name IN ('curry', 'ramen') AND promote = 'extra_point' THEN price * 20
-            WHEN product_name IN ('curry', 'ramen') AND promote = 'no_point' THEN price * 10
-            WHEN product_name = 'sushi' AND promote = 'extra_point' THEN price * 40
-            ELSE price * 20
+            WHEN promote = 'extra_point' THEN price * 20
+            WHEN product_name = 'sushi' AND promote = 'no_point' THEN price * 20
+            ELSE price * 10
         END AS points
     FROM
         CTE_point) AS subquery
@@ -429,8 +428,53 @@ Customer A orders curry after he/she became restaurant loyal member while Custom
 | customer_id | sum  |
 | ----------- | ---- |
 | A           | 1370 |
-| B           | 1140 |
+| B           | 820 |
 
 ---
 
 [View on DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138)
+
+Explaination: 
+*  I used first common table expression (cte_date) to create the table that contains the necessary features for next step
+
+| customer_id | order_date               | join_date                | product_id | price | product_name |
+| ----------- | ------------------------ | ------------------------ | ---------- | ----- | ------------ |
+| A           | 2021-01-07T00:00:00.000Z | 2021-01-07T00:00:00.000Z | 2          | 15    | curry        |
+| A           | 2021-01-11T00:00:00.000Z | 2021-01-07T00:00:00.000Z | 3          | 12    | ramen        |
+| A           | 2021-01-11T00:00:00.000Z | 2021-01-07T00:00:00.000Z | 3          | 12    | ramen        |
+| A           | 2021-01-10T00:00:00.000Z | 2021-01-07T00:00:00.000Z | 3          | 12    | ramen        |
+| A           | 2021-01-01T00:00:00.000Z | 2021-01-07T00:00:00.000Z | 1          | 10    | sushi        |
+| A           | 2021-01-01T00:00:00.000Z | 2021-01-07T00:00:00.000Z | 2          | 15    | curry        |
+| B           | 2021-01-04T00:00:00.000Z | 2021-01-09T00:00:00.000Z | 1          | 10    | sushi        |
+| B           | 2021-01-11T00:00:00.000Z | 2021-01-09T00:00:00.000Z | 1          | 10    | sushi        |
+| B           | 2021-01-01T00:00:00.000Z | 2021-01-09T00:00:00.000Z | 2          | 15    | curry        |
+| B           | 2021-01-02T00:00:00.000Z | 2021-01-09T00:00:00.000Z | 2          | 15    | curry        |
+| B           | 2021-01-16T00:00:00.000Z | 2021-01-09T00:00:00.000Z | 3          | 12    | ramen        |
+| B           | 2021-02-01T00:00:00.000Z | 2021-01-09T00:00:00.000Z | 3          | 12    | ramen        |
+
+* The second comon table expression is used to set the condition for promotion condition meaning if the order_day is within a week from join date, that order will receive extra points. Addtionally, this promotion ended by 2021-01-31.  Result from the comon table expression is presented in the table below:
+
+| customer_id | price | product_name | promote     |
+| ----------- | ----- | ------------ | ----------- |
+| A           | 15    | curry        | no_point    |
+| A           | 12    | ramen        | extra_point |
+| A           | 12    | ramen        | extra_point |
+| A           | 12    | ramen        | extra_point |
+| A           | 10    | sushi        | no_point    |
+| A           | 15    | curry        | extra_point |
+| B           | 10    | sushi        | extra_point |
+| B           | 10    | sushi        | no_point    |
+| B           | 15    | curry        | no_point    |
+| B           | 15    | curry        | no_point    |
+| B           | 12    | ramen        | extra_point |
+
+* In order to retrieve the points by each customer, we set the condition:
+  - if customer orders sushi, it always recevie 2x points, no matter when
+  - if product is 'extra-point' receive 2x points
+  - if customer order curry or ramen, they will receive 10point
+there fore:
+WHEN  promote = 'extra_point' THEN price * 20
+            WHEN product_name = 'sushi' AND promote = 'no_point' THEN price * 20
+            ELSE price * 10
+    
+------------------------------------------------------------- THE END--------------------------------------------------------------------
