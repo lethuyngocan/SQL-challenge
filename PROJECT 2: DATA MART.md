@@ -66,7 +66,9 @@ F	|Families
 * Can we use the avg_transaction column to find the average transaction size for each year for Retail vs Shopify? If not - how would you calculate it instead?
 
 # SOLUTION:
-1) CLEANSING THE DATA: Here I create the table to summary the action we need to do in order to cleasing the data and create the new table in the data_mart schema named clean_weekly_sales
+<h1 align="center">CLEANSING THE DATA:</h1> 
+  
+   Here I create the table to summary the action we need to do in order to cleasing the data and create the new table in the data_mart schema named clean_weekly_sales
    
 Column Name	| Requirements
 ------------|-------------
@@ -85,4 +87,53 @@ avg_transaction| Sales value divided by transactions rounded to 2 decimal
 sales|	-
 
 SOLUTION:
+**Schema (PostgreSQL v13)**
+      
+**Query #1**
+
+    CREATE TEMP TABLE clean_weekly_sales AS (
+        SELECT
+            TO_DATE(week_date, 'DD/MM/YY') AS week_date,
+            DATE_PART('week', TO_DATE(week_date, 'DD/MM/YY')) AS week_number,
+            DATE_PART('month', TO_DATE(week_date, 'DD/MM/YY')) AS month_number,
+            DATE_PART('year', TO_DATE(week_date, 'DD/MM/YY')) AS calendar_year,
+            region,
+            platform,
+            segment,
+            CASE
+                WHEN RIGHT(segment,1) = '1' THEN 'Young Adults'
+                WHEN RIGHT(segment,1) = '2' THEN 'Middle Aged'
+                WHEN RIGHT(segment,1) IN ('3','4') THEN 'Retirees'
+                ELSE 'unknown'
+            END AS age_band,
+            CASE
+                WHEN LEFT(segment,1) = 'C' THEN 'Couples'
+                WHEN LEFT(segment,1) = 'F' THEN 'Families'
+                ELSE 'unknown'
+            END AS demographic,
+            customer_type,
+            transactions,
+            ROUND((sales::NUMERIC/transactions), 2) AS avg_transaction,
+            sales
+        FROM
+            data_mart.weekly_sales
+    );
+
+    SELECT
+        *
+    FROM
+        clean_weekly_sales
+    LIMIT 5;
+
+| week_date                | week_number | month_number | calendar_year | region | platform | segment | age_band     | demographic | customer_type | transactions | avg_transaction | sales    |
+| ------------------------ | ----------- | ------------ | ------------- | ------ | -------- | ------- | ------------ | ----------- | ------------- | ------------ | --------------- | -------- |
+| 2020-08-31T00:00:00.000Z | 36          | 8            | 2020          | ASIA   | Retail   | C3      | Retirees     | Couples     | New           | 120631       | 30.31           | 3656163  |
+| 2020-08-31T00:00:00.000Z | 36          | 8            | 2020          | ASIA   | Retail   | F1      | Young Adults | Families    | New           | 31574        | 31.56           | 996575   |
+| 2020-08-31T00:00:00.000Z | 36          | 8            | 2020          | USA    | Retail   | null    | unknown      | unknown     | Guest         | 529151       | 31.20           | 16509610 |
+| 2020-08-31T00:00:00.000Z | 36          | 8            | 2020          | EUROPE | Retail   | C1      | Young Adults | Couples     | New           | 4517         | 31.42           | 141942   |
+| 2020-08-31T00:00:00.000Z | 36          | 8            | 2020          | AFRICA | Retail   | C2      | Middle Aged  | Couples     | New           | 58046        | 30.29           | 1758388  |
+
+---
+
+[View on DB Fiddle](https://www.db-fiddle.com/f/jmnwogTsUE8hGqkZv9H7E8/8)
 
