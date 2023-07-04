@@ -281,5 +281,99 @@ FROM
 |2018-04-01T00:00:00.000Z|	Shopify|	2.07|
 |2018-05-01T00:00:00.000Z|	Retail	|97.73|
 |2018-05-01T00:00:00.000Z|	Shopify|	2.27|
-
     
+Note: For illustration purpose, I only show the result in from 03/2018 to 5/2018.
+
+7) What is the percentage of sales by demographic for each year in the dataset?
+```sql
+WITH cte_yearlysale AS (
+SELECT 
+	calendar_year AS years,
+    demographic,
+    SUM(sales) AS yearly_sales
+FROM
+	clean_weekly_sales
+GROUP BY
+	1,2
+ORDER BY
+	1,2
+)
+SELECT
+	years,
+    demographic,
+    ROUND((yearly_sales/total_sales*100),2) AS percentage
+FROM
+(
+SELECT
+	years,
+    demographic,
+    yearly_sales,
+    SUM(yearly_sales) OVER (PARTITION BY years) AS total_sales 
+  
+FROM
+	cte_yearlysale ) AS subquery
+````
+**Answer**
+|years|	demographic|	percentage|
+|------|------------|----------------|
+|2018|	Couples|	26.38|
+|2018|	Families|	31.99|
+|2018|	unknown|	41.63|
+|2019|	Couples|	27.28|
+|2019|	Families|	32.47|
+|2019|	unknown|	40.25|
+|2020|	Couples|	28.72|
+|2020|	Families|	32.73|
+|2020|	unknown|	38.55|
+
+8) Which age_band and demographic values contribute the most to Retail sales?
+```sql
+SELECT
+	age_band,
+    demographic,
+    SUM(sales) AS total_sale
+    
+FROM
+	clean_weekly_sales
+WHERE 
+ 	platform = 'Retail'
+GROUP BY
+	1,2
+ ORDER BY
+ 	3 DESC ,1,2
+````
+**Answer**
+|age_band|	demographic|	total_sale|
+|--------|----------------|--------------|
+|unknown|	unknown|	16067285533|
+|Retirees|	Families|	6634686916|
+|Retirees|	Couples|	6370580014|
+|Middle Aged|	Families|	4354091554|
+|Young Adults|	Couples|	2602922797|
+|Middle Aged|	Couples|	1854160330|
+|Young Adults|	Families|	1770889293|
+
+10) Can we use the avg_transaction column to find the average transaction size for each year for Retail vs Shopify? If not - how would you calculate it instead?
+The answer is NO.
+The correct solution is:
+```sql
+SELECT
+  calendar_year,
+  platform,
+  SUM(sales) / SUM(transactions) AS med_transaction_size
+FROM
+  data_mart.clean_weekly_sales
+GROUP BY
+  1,2
+ORDER BY
+  1,2
+````
+**Answer**
+|calendar_year|	platform|med_transaction_size|
+|------------|---------|-----------------|
+|2018|	Retail|	36|
+|2018|	Shopify|	192|
+|2019|	Retail|	36|
+|2019|	Shopify|	183|
+|2020|	Retail|	36|
+|2020|	Shopify|	179|
