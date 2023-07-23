@@ -17,6 +17,33 @@ Pricing and Ratings
 Bonus DML Challenges (DML = Data Manipulation Language)
 
 ## CHALLENGE:
-You can find the all the details for this challenge including the datasets here.
-1) How many pizzas were ordered?
-   
+You can find the all the details for this challenge including the datasets [here](https://8weeksqlchallenge.com/case-study-2/).
+
+## SOLUTION:
+1) DATA CLEANING AND TRANSFORMATION:
+Looking at the `customer_orders` table below, we can see that there are
+- In the `exclusions` column, there are missing/ blank spaces ' ' and null values. 
+- In the `extras` column, there are missing/ blank spaces ' ' and null values.
+
+![image](https://github.com/yaswanthteja/SQL_Dannys_Pizza_Runner_CaseStudy2-/blob/master/images/Data%20Cleaning%20%26%20Transformation/solution1.png)
+
+If we inspect the exclusions and extras columns, we see that not every cell has a value. They either have the Null data type (i.e. [null]), null as a string (i.e. null) or are left blank. Let's clean:
+````sql
+DROP TABLE IF EXISTS customer_orders_temp;
+CREATE TABLE customer_orders_temp AS
+  SELECT 
+    order_id, 
+    customer_id, 
+    pizza_id, 
+    CASE
+      WHEN exclusions is null OR exclusions = ‘null’ THEN ‘’
+      ELSE exclusions
+    END AS exclusions,
+    CASE
+      WHEN extras is null OR extras = ‘null’ THEN ‘’
+      ELSE extras
+    END AS extras,
+    order_time
+FROM customer_orders
+````
+
