@@ -16,6 +16,7 @@ Ingredient Optimisation
 Pricing and Ratings
 Bonus DML Challenges (DML = Data Manipulation Language)
 
-## A)  Pizza Metrics
+## CHALLENGE:
+You can find the all the details for this challenge including the datasets here.
 1) How many pizzas were ordered?
    
