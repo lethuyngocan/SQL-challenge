@@ -55,3 +55,32 @@ Inspecting the `runner_orders` table below, we can see that pickup_time, distanc
 
 In addition, we have to remove the ‘km’, ‘minute’, ‘minutes’, ‘mins’ from distanceand duration columns.
 The cancellation column has the same issues with the exclusions and extras columns in customer_orders.
+
+````sql
+DROP TABLE IF EXISTS runner_orders_temp;
+CREATE TEMP TABLE runner_orders_temp AS
+ SELECT 
+   order_id, 
+   runner_id, 
+   CASE
+     WHEN pickup_time = ‘null’ THEN NULL
+     ELSE pickup_time
+   END AS pickup_time,
+   CASE
+     WHEN distance = ‘null’ THEN NULL
+     WHEN distance LIKE ‘%km’ THEN TRIM(‘km’ from distance)
+     ELSE distance 
+   END AS distance,
+   CASE
+     WHEN duration = ‘null’ THEN NULL
+     WHEN duration LIKE ‘%mins’ THEN TRIM(‘mins’ from duration)
+     WHEN duration LIKE ‘%minute’ THEN TRIM(‘minute’ from duration)
+     WHEN duration LIKE ‘%minutes’ THEN TRIM(‘minutes’ from duration)
+     ELSE duration
+   END AS duration,
+   CASE
+     WHEN cancellation IS NULL or cancellation = ‘null’ THEN ‘’
+     ELSE cancellation
+   END AS cancellation
+  FROM runner_orders
+````
