@@ -91,3 +91,7 @@ ALTER COLUMN pickup_time DATETIME,
 ALTER COLUMN distance FLOAT,
 ALTER COLUMN duration INT
 ````
+To view the table after cleaning: 
+````sql
+SELECT * FROM runner_orders_temp
+````
