@@ -84,3 +84,10 @@ CREATE TEMP TABLE runner_orders_temp AS
    END AS cancellation
   FROM runner_orders
 ````
+We now alter the data type as shown below:
+````sql
+ALTER TABLE runner_orders_temp
+ALTER COLUMN pickup_time DATETIME,
+ALTER COLUMN distance FLOAT,
+ALTER COLUMN duration INT
+````
