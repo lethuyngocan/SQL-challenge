@@ -21,6 +21,7 @@ You can find the all the details for this challenge including the datasets [here
 
 ## SOLUTION:
 1) DATA CLEANING AND TRANSFORMATION:
+a) Table Customer_order
 Looking at the `customer_orders` table below, we can see that there are
 - In the `exclusions` column, there are missing/ blank spaces ' ' and null values. 
 - In the `extras` column, there are missing/ blank spaces ' ' and null values.
@@ -47,3 +48,10 @@ CREATE TABLE customer_orders_temp AS
 FROM customer_orders
 ````
 
+b) Table runner_orders
+Inspecting the `runner_orders` table below, we can see that pickup_time, distance and duration columns were created with the character varying data type (i.e. varchar) when it should have been timestamp, numeric and integer respectively.es
+
+![image](https://github.com/yaswanthteja/SQL_Dannys_Pizza_Runner_CaseStudy2-/blob/master/images/Data%20Cleaning%20%26%20Transformation/solution3.png)
+
+In addition, we have to remove the ‘km’, ‘minute’, ‘minutes’, ‘mins’ from distanceand duration columns.
+The cancellation column has the same issues with the exclusions and extras columns in customer_orders.
