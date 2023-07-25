@@ -104,3 +104,9 @@ FROM customer_orders_temp;
 | ordered_pizza | 
 | ----------- | 
 |14|
+
+2) How many unique customer orders were made?
+````sql
+SELECT COUNT(DISTINCT(order_id)) AS unique_customer_orders 
+FROM customer_orders_temp;
+```
