@@ -110,8 +110,11 @@ Answer:
 ````sql
 SELECT COUNT(DISTINCT(order_id)) AS unique_customer_orders 
 FROM customer_orders_temp;
+
 ````
 Answer: 
 |unique_customer_orders | 
 | ----------- | 
 |10|
+
+3) How many successful orders were delivered by each runner?
