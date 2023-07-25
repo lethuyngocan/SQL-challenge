@@ -101,3 +101,6 @@ SELECT * FROM runner_orders_temp
 SELECT COUNT(pizza_id) AS ordered_pizza 
 FROM customer_orders_temp;
 `````
+| ordered_pizza | 
+| ----------- | 
+|14|
