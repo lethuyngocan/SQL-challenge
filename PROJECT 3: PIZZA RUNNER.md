@@ -20,7 +20,7 @@ Bonus DML Challenges (DML = Data Manipulation Language)
 You can find the all the details for this challenge including the datasets [here](https://8weeksqlchallenge.com/case-study-2/).
 
 ## SOLUTION:
-1) DATA CLEANING AND TRANSFORMATION:
+A) DATA CLEANING AND TRANSFORMATION:
 a) Table Customer_order
 Looking at the `customer_orders` table below, we can see that there are
 - In the `exclusions` column, there are missing/ blank spaces ' ' and null values. 
@@ -95,3 +95,9 @@ To view the table after cleaning:
 ````sql
 SELECT * FROM runner_orders_temp
 ````
+# B. Pizza Metrics
+1) How many pizzas were ordered?
+````sql
+SELECT COUNT(pizza_id) AS ordered_pizza 
+FROM customer_orders_temp;
+`````
