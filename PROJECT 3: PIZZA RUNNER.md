@@ -101,6 +101,7 @@ SELECT * FROM runner_orders_temp
 SELECT COUNT(pizza_id) AS ordered_pizza 
 FROM customer_orders_temp;
 `````
+Answer: 
 | ordered_pizza | 
 | ----------- | 
 |14|
@@ -109,4 +110,5 @@ FROM customer_orders_temp;
 ````sql
 SELECT COUNT(DISTINCT(order_id)) AS unique_customer_orders 
 FROM customer_orders_temp;
-```
+````
+
