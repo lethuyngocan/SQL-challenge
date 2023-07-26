@@ -131,3 +131,6 @@ Answer:
 |1|	4|
 |2|	3|
 |3|	1|
+* Runner 1 has 4 successful orders.
+* Runner 2 has 3 successful orders.
+* Runner 3 has 1 successful  order.
