@@ -162,11 +162,11 @@ Answer:
 |customer_id|	pizza_name|	count_pizza|
 |----------|-----------|------------|
 |101|	Meatlovers|	2|
-101	Vegetarian	1
-102	Meatlovers	2
-102	Vegetarian	1
-103	Meatlovers	3
-103	Vegetarian	1
+|101|	Vegetarian|	1|
+|102|	Meatlovers|	2|
+|102|	Vegetarian|	1|
+|103|	Meatlovers|	3|
+|103|	Vegetarian	1
 104	Meatlovers	3
 105	Vegetarian	1
 
