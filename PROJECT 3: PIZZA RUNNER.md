@@ -166,8 +166,6 @@ Answer:
 |102|	Meatlovers|	2|
 |102|	Vegetarian|	1|
 |103|	Meatlovers|	3|
-|103|	Vegetarian	1
-104	Meatlovers	3
-105	Vegetarian	1
-
-DB Fiddle – Crafted with ♥ by Status200 in the United Kingdom.
+|103|	Vegetarian|	1|
+|104|	Meatlovers|	3|
+|105|	Vegetarian|	1|
