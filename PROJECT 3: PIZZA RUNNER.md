@@ -144,3 +144,7 @@ WHERE distance != ' '
 GROUP BY pizza_id
 ORDER BY pizza_id;
 ````
+|pizza_id	|count|
+|---------|--------|
+|1|9|
+|2|3|
