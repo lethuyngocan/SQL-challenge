@@ -148,3 +148,13 @@ ORDER BY pizza_id;
 |---------|--------|
 |1|9|
 |2|3|
+
+5) How many Vegetarian and Meatlovers were ordered by each customer?
+````sql
+SELECT c.customer_id, p.pizza_name, COUNT(p.pizza_name) AS count_pizza
+
+FROM customer_orders_temp AS c
+INNER JOIN pizza_runner.pizza_names AS p ON c.pizza_id=p.pizza_id
+GROUP BY c.customer_id, p.pizza_name
+ORDER BY c.customer_id;
+````
