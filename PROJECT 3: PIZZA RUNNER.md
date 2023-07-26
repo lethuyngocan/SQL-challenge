@@ -118,3 +118,16 @@ Answer:
 |10|
 
 3) How many successful orders were delivered by each runner?
+````sql
+SELECT runner_id, COUNT(runner_id) AS order_count 
+FROM runner_orders_temp
+WHERE distance !=' '
+GROUP BY runner_id
+ORDER BY order_count DESC;
+````
+Answer:
+|runner_id	|order_count|
+|---------|--------|
+|1|	4|
+|2|	3|
+|3|	1|
