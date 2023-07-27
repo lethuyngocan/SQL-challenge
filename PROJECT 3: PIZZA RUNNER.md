@@ -169,3 +169,5 @@ Answer:
 |103|	Vegetarian|	1|
 |104|	Meatlovers|	3|
 |105|	Vegetarian|	1|
+
+6) What was the maximum number of pizzas delivered in a single order?
