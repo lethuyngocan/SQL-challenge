@@ -171,3 +171,5 @@ Answer:
 |105|	Vegetarian|	1|
 
 6) What was the maximum number of pizzas delivered in a single order?
+````sql
+
